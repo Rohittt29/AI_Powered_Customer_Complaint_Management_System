@@ -16,3 +16,12 @@ pytesseract
 easyocr
 python-dotenv
 python-multipart
+
+# Testing
+pytest
+pytest-asyncio
+pytest-cov
+httpx
+
+# Security
+slowapi

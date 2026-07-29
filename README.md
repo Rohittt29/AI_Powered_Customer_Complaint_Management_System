@@ -1,61 +1,88 @@
-# AI-Powered Customer Complaint Management System
+# AI Powered Customer Complaint Management System
 
-This is the AI-Powered Customer Complaint Management System for a Pharmaceutical Quality Management System (QMS).
+## Overview
 
-## Architecture
+A modern, production‑ready web application that enables businesses to capture, classify, and resolve customer complaints using AI. The system consists of:
 
-The system is designed with an AI-First workflow using a layered architecture:
+- **FastAPI backend** (Python) with a PostgreSQL database, Pydantic schemas, and LangChain/LangGraph orchestration.
+- **AI agents & tools** that handle complaint extraction, sentiment analysis, routing, and response generation.
+- **React frontend** (TypeScript, Vite, Tailwind CSS, Shadcn UI) with Redux Toolkit for state management.
+- **CI/CD pipeline** (GitHub Actions) that runs unit, integration, and end‑to‑end tests and builds Docker images.
+- **Docker Compose** for easy local development and production deployment behind Nginx.
 
-- **Frontend:** React 19, Redux Toolkit, Tailwind CSS, TypeScript
-- **Backend:** FastAPI, Python 3.12+
-- **AI Orchestration:** LangGraph, LangChain, Groq (Gemma2-9B-IT)
-- **Database:** PostgreSQL / MySQL (managed via SQLAlchemy)
+The architecture follows a clean, decoupled design – the UI never talks directly to the LLM; all AI logic lives in reusable tooling layers accessed via the backend.
 
-## Setup Instructions
+---
 
-### Environment Variables
+## Tech Stack
 
-Copy `.env.example` to `.env` and fill in your configuration:
+| Layer | Technology |
+|-------|------------|
+| **Backend** | FastAPI, Pydantic, SQLAlchemy, PostgreSQL, LangChain, LangGraph |
+| **AI** | Groq (Gemma model), custom AI tools & agents |
+| **Frontend** | React, TypeScript, Vite, Tailwind CSS, Shadcn UI, Redux Toolkit |
+| **Testing** | Pytest, Vitest, React Testing Library, Playwright |
+| **CI/CD** | GitHub Actions |
+| **Containerisation** | Docker, Docker Compose, Nginx |
 
-```bash
-cp .env.example .env
-```
+---
 
-Make sure to provide your `GROQ_API_KEY`.
+## Getting Started (Local Development)
 
-### Running via Docker Compose
+1. **Clone the repository**
+   ```bash
+   git clone <repo-url>
+   cd AI_Powered_Customer_Complaint_Management_System
+   ```
 
-The easiest way to run the entire stack is using Docker Compose:
+2. **Create a `.env` file** in the project root (or copy from `.env.example`). Required variables:
+   ```
+   POSTGRES_USER=postgres
+   POSTGRES_PASSWORD=postgres
+   POSTGRES_DB=qms_db
+   GROQ_API_KEY=your-groq-key
+   SECRET_KEY=changeme
+   LOG_LEVEL=debug
+   ```
 
-```bash
-docker-compose up --build
-```
+3. **Start services with Docker Compose (dev profile)**
+   ```bash
+   docker compose --profile dev up --build
+   ```
+   - Backend will be reachable at `http://localhost:8000`
+   - Frontend will be reachable at `http://localhost`
 
-- Frontend: http://localhost:80
-- Backend API Docs: http://localhost:8000/api/docs
+4. **Run the test suite**
+   ```bash
+   # Backend tests
+   cd backend && pytest
 
-### Manual Setup
+   # Frontend unit tests
+   cd ../frontend && npx vitest run
 
-**Backend:**
-```bash
-cd backend
-python -m venv venv
-# Activate venv
-pip install -r requirements.txt
-uvicorn app.main:app --reload
-```
+   # End‑to‑end UI tests
+   npx playwright test
+   ```
 
-**Frontend:**
-```bash
-cd frontend
-npm install
-npm run dev
-```
+---
 
-## Features
+## Scripts
 
-- Conversational AI Copilot for Logging Complaints
-- AI-assisted Pharmaceutical Risk Assessment
-- Document Upload and OCR Parsing
-- Complaint Modification via Natural Language
-- Scalable LangGraph state management
+- **`backend/scripts/seed_data.py`** – populates the database with sample complaint categories and users.
+- **`frontend/src/api/axios.ts`** – centralised Axios instance with interceptors for auth & error handling.
+- **`frontend/src/store.ts`** – configures Redux Toolkit store with slices for complaints, chat, UI state.
+
+---
+
+## Architecture Highlights
+
+- **AI Tools Layer**: Reusable functions (`complaint_extraction`, `sentiment_analysis`, …) that encapsulate business logic. Agents invoke tools; tools invoke the LLM via the Groq provider.
+- **LangGraph Workflow**: Orchestrates multi‑step AI processing, ensuring deterministic state transitions.
+- **Middleware**: Structured JSON logging, rate‑limiting, secure headers, and correlation IDs for observability.
+- **Testing Pyramid**: Unit → Integration → End‑to‑End, guaranteeing confidence at every level.
+
+---
+
+## License
+
+MIT © 2026 Rohit Kumar
