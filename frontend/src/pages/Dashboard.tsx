@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { PageContainer } from '../components/layout/PageContainer';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/common/Card';
-import { AlertCircle, CheckCircle2, Clock, FileText } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Clock, FileText, Loader2 } from 'lucide-react';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { fetchComplaints } from '../redux/slices/complaintSlice';
 
 const stats = [
   { title: "Total Complaints", value: "1,248", icon: FileText, trend: "+12%" },
@@ -11,6 +13,15 @@ const stats = [
 ];
 
 export function Dashboard() {
+  const dispatch = useAppDispatch();
+  const { complaints, status } = useAppSelector(state => state.complaint);
+
+  useEffect(() => {
+    if (status === 'idle') {
+      dispatch(fetchComplaints());
+    }
+  }, [status, dispatch]);
+
   return (
     <PageContainer>
       <div className="space-y-6">
@@ -46,18 +57,23 @@ export function Dashboard() {
               <CardTitle>Recent Complaints</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="flex items-center p-4 border rounded-lg hover:bg-slate-50 transition-colors cursor-pointer">
-                    <div className="w-2 h-2 rounded-full bg-amber-500 mr-4"></div>
-                    <div className="flex-1 space-y-1">
-                      <p className="text-sm font-medium leading-none">CMP-2026-{4589 + i}</p>
-                      <p className="text-sm text-slate-500">Packaging defect reported in Batch BT2405{i}</p>
+              {status === 'loading' ? (
+                <div className="flex justify-center p-8"><Loader2 className="w-8 h-8 animate-spin text-indigo-500" /></div>
+              ) : (
+                <div className="space-y-4">
+                  {complaints.length > 0 ? complaints.slice(0,4).map((c: any, i) => (
+                    <div key={i} className="flex items-center p-4 border rounded-lg hover:bg-slate-50 transition-colors cursor-pointer">
+                      <div className="w-2 h-2 rounded-full bg-amber-500 mr-4"></div>
+                      <div className="flex-1 space-y-1">
+                        <p className="text-sm font-medium leading-none">{c.id || `CMP-2026-${4589 + i}`}</p>
+                        <p className="text-sm text-slate-500">{c.complaint_description || `Packaging defect reported in Batch BT2405${i}`}</p>
+                      </div>
                     </div>
-                    <div className="text-sm text-slate-500">2 hours ago</div>
-                  </div>
-                ))}
-              </div>
+                  )) : (
+                    <div className="text-sm text-slate-500 text-center py-4">No recent complaints available. (API returned empty or failed)</div>
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
 

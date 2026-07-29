@@ -1,6 +1,7 @@
 import React from 'react';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
+import { ToastContainer } from '../common/ToastContainer';
 
 interface PageContainerProps {
   children: React.ReactNode;
@@ -16,6 +17,7 @@ export function PageContainer({ children }: PageContainerProps) {
           {children}
         </main>
       </div>
+      <ToastContainer />
     </div>
   );
 }
